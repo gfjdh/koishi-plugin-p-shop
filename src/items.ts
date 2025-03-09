@@ -191,7 +191,7 @@ export const ITEMS: Record<string, ShopItem> = {
   },
   '草莓大福': {
     id: '草莓大福',
-    price: 12345,
+    price: 12880,
     maxStack: 10,
     description: '使用后增加10点好感度',
     favorability: 0,
@@ -213,4 +213,26 @@ export const ITEMS: Record<string, ShopItem> = {
       return '好的' + args[0] + '，以后叫我' + args[1] + '吧'
     }
   },
+  '觉的胖次': {
+    id: '觉的胖次',
+    price: 55555,
+    maxStack: 1,
+    description: '若好感为负，使用后将好感归零（正好感无法使用）',
+    favorability: -999,
+    use: async ({ user, item }) => {
+      if (user.favorability < 0) {
+        user.favorability = 0
+        item.count--
+        return '使用成功，已重置好感度'
+      }
+      return '好感度不为负，无法使用'
+    }
+  },
+  '帽子先生': {
+    id: '帽子先生',
+    price: 5140,
+    maxStack: 10,
+    description: '是恋恋的钢盔，无法使用，免疫一次好感度下降后消耗',
+    favorability: 10,
+  }
 }
