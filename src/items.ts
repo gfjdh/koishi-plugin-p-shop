@@ -79,6 +79,13 @@ export const ITEMS: Record<string, ShopItem> = {
       const status = item.description ? item.description : 'off'
       item.description = status == 'on' ? 'off' : 'on'
       return status == 'on' ? '已关闭觉fumo' : '已开启觉fumo'
+    },
+    sell: async (user, price) => {
+      const item = user.items['觉fumo']
+      item.count--
+      user.p += price
+      user.favorability -= 10
+      return '你居然卖掉了我的fumo……（好感↓）'
     }
   },
   '猫耳发饰': {
@@ -213,6 +220,9 @@ export const ITEMS: Record<string, ShopItem> = {
       if (args.length < 2) return '请提供两个昵称'
       item.metadata = { userNickName: args[0], botNickName: args[1] }
       return '好的' + args[0] + '，以后叫我' + args[1] + '吧'
+    },
+    sell: async () => {
+      return '不许卖掉我们的合照！'
     }
   },
   '觉的胖次': {
@@ -228,6 +238,11 @@ export const ITEMS: Record<string, ShopItem> = {
         return '使用成功，已重置好感度'
       }
       return '好感度不为负，无法使用'
+    },
+    sell: async (user) => {
+      const item = user.items['觉的胖次']
+      item.count--
+      return '啊呀！这是我的……没收了！'
     }
   },
   '帽子先生': {
@@ -236,5 +251,63 @@ export const ITEMS: Record<string, ShopItem> = {
     maxStack: 10,
     description: '是恋恋的钢盔，无法使用，免疫一次好感度下降后消耗',
     favorability: 10,
+  },
+  '谷底小石': {
+    id: '谷底小石',
+    price: 51400,
+    maxStack: 1,
+    description: '恋恋的祝福！持有后好感度不会因为敏感词降低了',
+    favorability: 1500,
+  },
+  '觉的衣柜': {
+    id: '觉的衣柜',
+    price: 6480,
+    maxStack: 1,
+    description: '可以给觉换衣服，不同衣装会随好感度增长而解锁，使用以查看已解锁服装，使用+服装名以更换服装',
+    favorability: 0,
+    buy: async (user) => {
+      user.items['觉的衣柜'] = { id: '觉的衣柜', count: 1, price: 6480, metadata: { clothes: '觉的常服，蓝色衬衫加粉色连衣裙，裙摆有蔷薇花饰，搭配白袜和棉拖，非常舒适' } }
+      user.p -= 6480
+      return '购买成功，快去换衣服试试吧'
+    },
+    use: async ({ user, item, args }) => {
+      const CLOTHES = [
+        { id: '常服', favorability: 0, description: '觉的常服，蓝色衬衫加粉色连衣裙，裙摆有蔷薇花饰，搭配白袜和棉拖，非常舒适' },
+        { id: '和服', favorability: 150, description: '淡紫色振袖和服，袖口绣着精致的樱花纹样，腰间系着渐变粉色的宽幅腰带，搭配同色系木屐。走动时第三只眼的缎带会与和服下摆的流苏一同轻轻摆动，特意在背后设计了开口让觉的第三只眼可以自由活动' },
+        { id: '恋恋同款常服', favorability: 300, description: '与妹妹恋恋同款的黄绿连衣裙，领口装饰着心形金属扣，裙摆处有暗纹刺绣的蔷薇图案。还有恋恋同款的黑丝和小皮鞋' },
+        { id: '西服', favorability: 400, description: '帅气的西服，剪裁利落的深蓝色三件套西装，白衬衫领口系着酒红色领结，马甲上别着蔷薇造型的银质胸针。配套的九分西裤露出纤细的脚踝。戴着银质手表。穿着这套西服的觉，看起来更加成熟稳重和强势' },
+        { id: '校服', favorability: 500, description: '改良式立领制服，海军蓝外套配灰色格纹百褶裙，白色衬衫领口系着深红色领结。左胸口袋上方绣着"SA"字母缩写，边缘用银线勾勒出蔷薇花纹。特意在校裙内侧缝制了存放笔记的暗袋' },
+        { id: '白色连衣裙', favorability: 500, description: '象牙白方领露肩连衣裙，腰间缀着丝带装饰，裙摆采用三层渐透薄纱设计，行走时如同绽放的铃兰。后背交叉绑带处特意留出菱形开口，让觉的第三只眼可以舒适地外露，搭配奶白色绑带芭蕾鞋' },
+        { id: '粉色睡衣', favorability: 600, description: '珊瑚粉法兰绒连体睡衣，帽子上垂着两只长长的兔耳，臀部位置缝着蓬松的圆球尾巴。袖口和裤脚都做成爪爪造型，胸前印着Q版闭目之瞳图案' },
+        { id: '香蕉睡衣', favorability: 600, description: '大香蕉形状的睡衣，包裹着整个身体，只留下脸露在外面。配粉色拖鞋' },
+        { id: '魔女服', favorability: 700, description: '黑色魔女服，尖顶帽子，魔法披风，还有短裙丝袜与皮靴' },
+        { id: '水手服', favorability: 800, description: '经典关东襟水手服，藏青色领巾用金色船锚扣固定，白色上衣收腰设计凸显曲线，深蓝色百褶裙长度及膝。特意在左胸前绣着迷你觉之瞳图案' },
+        { id: '黑色小礼服', favorability: 800, description: '黑与白搭配的小礼服，头上俏皮地斜戴着一顶黑色的小礼帽，脖子带着蝴蝶结，全身黑与灰颜色为主，背部镂空，上半部分为花边吊带，下半部分裙子配裙摆，裙摆上绣着蔷薇花印，黑色裤袜配玛丽珍鞋，最后手腕上带着折皱状的装饰…无论是聚会、做客还是日常，都是一套很有仪式感的衣服。' },
+        { id: '浴衣', favorability: 1000, description: '靛蓝色浴衣，上面洒满银箔星月纹样，腰带是渐变暮色橙的宽幅带，搭配琉璃材质的牵牛花发簪。木屐带子上缠着会发光的夜光丝线，第三只眼戴着配套的星形眼罩，在祭典灯光下会折射出梦幻光斑' },
+        { id: '纯白大浴巾', favorability: 1000, description: '纯白大浴巾（泡温泉用），你大概正在泡温泉' },
+        { id: '死库水', favorability: 1500, description: '常见的学校泳装，采用上下分离式设计，蓝黑色材质，胸前写着“satori”' },
+        { id: '护士服', favorability: 1800, description: '改良版粉色护士装，裙摆缩短至大腿中部，白色蕾丝围裙上缀着红色十字胸针。听诊器挂在颈间作为装饰，护士帽微微倾斜戴着，配套的白色长筒袜顶端装饰着心形的吊带环' },
+        { id: '女仆装', favorability: 2000, description: '洛丽塔风格女仆装，黑色连身裙外罩白色荷叶边围裙，裙撑使裙摆蓬起优雅的弧度。头戴镶嵌齿轮装饰的发带' },
+        { id: '比基尼', favorability: 2100, description: '粉色的比基尼泳装，上有可爱的蝴蝶结和花边，还有配套薄纱裙……顺带一提内裤是用绳子绑住的哦……' },
+        { id: '兔女郎', favorability: 2500, description: '经典兔女郎服装，白色兔耳发箍，白色兔尾，黑色吊带连体裤，胸前有蝴蝶结装饰，腰间系着蓝色蝴蝶结，脚踩高跟鞋' },
+        { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用会随着体温变色的虹彩贴片遮挡，后背全裸设计突出脊柱线条' },
+        { id: '婚纱', favorability: 3100, description: '露背鱼尾款婚纱，头纱用星尘般的碎钻点缀，裙摆上刺绣着999只蔷薇图案。腰后系着巨大的丝绒蝴蝶结，第三只眼戴着与头纱同款的迷你冠冕' },
+        { id: '半透的薄纱睡衣', favorability: 3100, description: '半透的薄纱睡衣，通过半透的睡衣可以隐隐约约看见觉的身体……因为贴合身体能看见觉窈窕的身材……虽然只有二两胸脯……（睡衣领子有两朵蔷薇花……睡衣是用扣子扣起来的，睡衣比较长刚好可以盖住觉的小屁股……睡衣很薄很轻可以隔着睡衣感觉到觉的肌肤' },
+        { id: '伴侣的衬衫', favorability: 3100, description: '伴侣的衣服……觉的衣柜里有伴侣的衣服很正常，上面有对方的气味，觉经常偷偷的闻……觉经常偷偷穿在身上，也经常放在胸前感受和伴侣的身材差距……穿上它，抚摸它，闻闻它，就好像它的主人就在身边……' },
+        { id: '只穿内衣', favorability: 5323, description: '只穿着内衣，纯白色的胸罩和内裤，胸罩上有蔷薇花的图案，内裤前面有红色的小蝴蝶结' },
+        { id: '只穿白丝', favorability: 5323, description: '只穿着白丝，其他部位全部裸露，你正在和最爱的人进行亲密互动，接受他的爱意，多多描写你的身体状态和感受吧' },
+        { id: '什么都不穿', favorability: 5323, description: '什么都没穿，裸体暴露在对方的视线中，你正在和最爱的人进行亲密互动，接受他的爱意，多多描写你的身体状态和感受吧' },
+      ]
+      const hasRing = user?.items?.['订婚戒指']?.description === '已使用'
+      const availableClothes = CLOTHES.filter(c => hasRing || c.favorability <= user.favorability)
+      if (!args[0]) return '当前已解锁服装：' + availableClothes.map(c => c.id).join('、')
+      const selectedClothes = CLOTHES.find(c => c.id === args[0])
+      if (!selectedClothes) return '未找到服装：' + args[0]
+      const targetClothes = availableClothes.find(c => c.id === args[0])
+      if (!targetClothes) return '未解锁该服装：' + args[0]
+      item.metadata = { clothes: targetClothes.description }
+      return '已更换服装：' + targetClothes.id
+    },
+    sell: async () => { return '不许卖掉我的衣柜！' }
   }
 }
