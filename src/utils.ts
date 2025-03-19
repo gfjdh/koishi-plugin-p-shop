@@ -38,7 +38,13 @@ export async function writeMemoryFile(userId: string, content: MemoryEntry[]): P
   fs.writeFileSync(memoriesPath, JSON.stringify(content, null, 2), 'utf-8')
 }
 
+// 写入画像文件
+export async function writePortraitFile(userId: string, content: string): Promise<void> {
+  const portraitPath = path.join('./data/satori_ai/UserPortrait', `${userId}.txt`)
+  fs.writeFileSync(portraitPath, content, 'utf-8')
+}
 
+// ==================== 加密/解密 ====================
 // ================== Base64 实现 ==================
 const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 

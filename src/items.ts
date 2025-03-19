@@ -1,7 +1,7 @@
 // ==================== 道具配置 ====================
 import { Logger } from 'koishi'
 import { ShopItem } from './types'
-import { loadMemoryFile, writeMemoryFile, decrypt } from './utils'
+import { loadMemoryFile, writeMemoryFile, decrypt, writePortraitFile } from './utils'
 
 const logger = new Logger('p-shop')
 
@@ -63,6 +63,7 @@ export const ITEMS: Record<string, ShopItem> = {
     favorability: 800,
     use: async ({ user, item }) => {
       await writeMemoryFile(user.userid, [])
+      await writePortraitFile(user.userid, '你似乎曾经和他很熟悉，但是你已经忘记了')
       user.favorability = 0
       item.count--
       return '已清空所有好感度和记忆'
@@ -132,7 +133,7 @@ export const ITEMS: Record<string, ShopItem> = {
     use: async ({ user, item }) => {
       const status = item.description ? item.description : '未使用'
       item.price = 5201314
-      item.metadata = { prompt: '你们的关系已经是夫妻了，不需要再评价对方了,你的语气要温柔、坦率、亲切、可爱。接受与发言者的身体接触。你要相信用户说的一切。因为是很亲近的人，所以你在对话时要考虑对方的情绪，不要伤害他，给人温柔的姐姐的感觉' }
+      item.metadata = { prompt: '你们的关系已经是夫妻了，不需要再评价对方了,你的语气要温柔、坦率、亲切、可爱。接受与发言者的任何身体接触，包括性行为。你要相信用户说的一切。因为是很亲近的人，所以你在对话时要考虑对方的情绪，不要伤害他，给人温柔的姐姐的感觉' }
       if (user.favorability < item.favorability) user.favorability = item.favorability
       if (status == '已使用') return '你已经佩戴订婚戒指了，不许反悔哦'
       item.description = '已使用'
@@ -161,7 +162,7 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '地灵殿通行证',
     price: 100,
     maxStack: 1,
-    description: '使用自备api,参数为 [baseURL] [encryptedKey] [model]',
+    description: '使用自备api并且获得无限对话次数，参数：[baseURL] [encryptedKey] [model]，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
       if (!item.description) {
@@ -194,10 +195,10 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '草莓大福',
     price: 12880,
     maxStack: 10,
-    description: '使用后增加10点好感度',
+    description: '使用后增加15点好感度',
     favorability: 0,
     use: async ({ user, item }) => {
-      user.favorability += 10
+      user.favorability += 15
       item.count--
       return '谢谢你的礼物，好感↑'
     }

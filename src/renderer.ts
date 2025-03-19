@@ -33,7 +33,7 @@ export const renderViewShop = async (pup: Puppeteer, items: ShopItem[], targetIt
 </div>`
         return itemHtml
     }).join('')
-    let dialogue = "欢迎光临，这里是地灵殿的商店，有什么需要的尽管说吧。"
+    let dialogue = "欢迎光临，这里是地灵殿的商店，有什么需要的尽管说吧。\n（发送“查看商店 道具名”可以查看道具效果）"
     let satori = imgSatoriKomeiji_1
     if (targetItem) {
         satori = imgSatoriKomeiji_1
@@ -150,12 +150,12 @@ body {
 }
 .imgicon {
     margin-left: 12px;
-    width: 50px; 
-    height: 50px;  
-    background: #fbefcb; 
-    border-radius: 50%/10%; 
-    text-align: center; 
-    text-indent: .1em; 
+    width: 50px;
+    height: 50px;
+    background: #fbefcb;
+    border-radius: 50%/10%;
+    text-align: center;
+    text-indent: .1em;
 }
 .column {
     height: 70px;
@@ -269,12 +269,12 @@ body {
 }
 img {
     margin-left: 12px;
-    width: 50px; 
-    height: 50px;  
-    background: #fbefcb; ; 
-    border-radius: 50%/10%; 
-    text-align: center; 
-    text-indent: .1em; 
+    width: 50px;
+    height: 50px;
+    background: #fbefcb; ;
+    border-radius: 50%/10%;
+    text-align: center;
+    text-indent: .1em;
 }
 .column {
     height: 70px;
@@ -381,8 +381,8 @@ body {
 }
 .body {
     padding: 20px;
-    width: 560px;  
-    height: 260px;  
+    width: 560px;
+    height: 260px;
     background: url(${backItemboard});
     background-size: contain;
     display: flex;
@@ -403,17 +403,17 @@ body {
     margin-bottom: 10px;
     height: 100px;
     width: 100px;
-    background: #fbefcb; 
-    border-radius: 50%/10%; 
-    text-align: center; 
-    text-indent: .1em; 
+    background: #fbefcb;
+    border-radius: 50%/10%;
+    text-align: center;
+    text-indent: .1em;
 }
 img {
     display: block;
     border: none;
     object-fit: contain;
-    width: 100px; 
-    height: 100px;   
+    width: 100px;
+    height: 100px;
 }
 .name {
     margin-top: auto;
