@@ -181,6 +181,8 @@ export const ITEMS: Record<string, ShopItem> = {
         item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
       }
       const status = item.description ? item.description : 'off'
+      if (status == 'on' && user.usage >= 9999)
+        return '今日无法关闭地灵殿通行证'
       item.description = status == 'on' ? 'off' : 'on'
       user.usage = 9999
       return status == 'on' ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
@@ -267,7 +269,7 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '觉的衣柜',
     price: 6480,
     maxStack: 1,
-    description: '可以给觉换衣服，不同衣装会随好感度增长而解锁，使用以查看已解锁服装，加上服装名以更换服装',
+    description: '可以给觉换衣服，不同衣装会随好感度增长而解锁，发送“更衣”或“换装”以查看已解锁服装，加上服装名以更换服装',
     favorability: 0,
     buy: async (user) => {
       user.items['觉的衣柜'] = { id: '觉的衣柜', count: 1, price: 6480, metadata: { clothes: '觉的常服，蓝色衬衫加粉色连衣裙，裙摆有蔷薇花饰，搭配白袜和棉拖，非常舒适' } }
@@ -294,7 +296,7 @@ export const ITEMS: Record<string, ShopItem> = {
         { id: '女仆装', favorability: 2000, description: '洛丽塔风格女仆装，黑色连身裙外罩白色荷叶边围裙，裙撑使裙摆蓬起优雅的弧度。头戴镶嵌齿轮装饰的发带' },
         { id: '比基尼', favorability: 2100, description: '粉色的比基尼泳装，上有可爱的蝴蝶结和花边，还有配套薄纱裙……顺带一提内裤是用绳子绑住的哦……' },
         { id: '兔女郎', favorability: 2500, description: '经典兔女郎服装，白色兔耳发箍，白色兔尾，黑色吊带连体裤，胸前有蝴蝶结装饰，腰间系着蓝色蝴蝶结，脚踩高跟鞋' },
-        { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用会随着体温变色的虹彩贴片遮挡，后背全裸设计突出脊柱线条' },
+        { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用虹彩贴片遮挡，后背全裸设计突出脊柱线条' },
         { id: '婚纱', favorability: 3100, description: '露背鱼尾款纯白婚纱，头纱用星尘般的碎钻点缀，裙摆上刺绣着999只蔷薇图案。腰后系着巨大的丝绒蝴蝶结，第三只眼戴着与头纱同款的迷你冠冕' },
         { id: '半透的薄纱睡衣', favorability: 3100, description: '半透的薄纱睡衣，通过半透的睡衣可以隐隐约约看见觉的身体……因为贴合身体能看见觉窈窕的身材……虽然只有二两胸脯……（睡衣领子有两朵蔷薇花……睡衣是用扣子扣起来的，睡衣比较长刚好可以盖住觉的小屁股……睡衣很薄很轻可以隔着睡衣感觉到觉的肌肤' },
         { id: '伴侣的衬衫', favorability: 3100, description: '伴侣的衣服……觉的衣柜里有伴侣的衣服很正常，上面有对方的气味，觉经常偷偷的闻……觉经常偷偷穿在身上，也经常放在胸前感受和伴侣的身材差距……穿上它，抚摸它，闻闻它，就好像它的主人就在身边……，下身穿着白色的灯笼裤' },
@@ -311,7 +313,6 @@ export const ITEMS: Record<string, ShopItem> = {
       if (!targetClothes) return '未解锁该服装：' + args[0]
       item.metadata = { clothes: targetClothes.description }
       return '已更换服装：' + targetClothes.id
-    },
-    sell: async () => { return '不许卖掉我的衣柜！' }
+    }
   }
 }
