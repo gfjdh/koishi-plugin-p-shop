@@ -181,11 +181,18 @@ export const ITEMS: Record<string, ShopItem> = {
         item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
       }
       const status = item.description ? item.description : 'off'
-      if (status == 'on' && user.usage >= 9999)
+      if (status == 'on' && user.usage > 9999)
         return '今日无法关闭地灵殿通行证'
       item.description = status == 'on' ? 'off' : 'on'
       user.usage = 9999
       return status == 'on' ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
+    },
+    sell: async (user) => {
+      const item = user.items['地灵殿通行证']
+      if (item.description == 'on') return '地灵殿通行证正在使用中，无法出售'
+      item.count--
+      user.p += item.price
+      return
     }
   },
   '提神布丁': {
