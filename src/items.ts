@@ -172,20 +172,38 @@ export const ITEMS: Record<string, ShopItem> = {
     description: '使用自备api并且获得无限对话次数，参数：[baseURL] [encryptedKey] [model]，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
-      if (!item.description) {
-        if (args.length < 3) return '请提供正确的参数'
+      if (args.length === 3) {
         const baseURL = args[0]
         const encryptedKey = args[1]
         const model = args[2]
         const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
         item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
+        item.description = 'on'
+        user.usage = user.usage > 9999 ? user.usage : 9999
+        return '已开启地灵殿通行证'
       }
-      const status = item.description ? item.description : 'off'
-      if (status == 'on' && user.usage > 9999)
-        return '今日无法关闭地灵殿通行证'
-      item.description = status == 'on' ? 'off' : 'on'
-      user.usage = 9999
-      return status == 'on' ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
+      else if (args.length === 2 && item.metadata && item.description) {
+        const baseURL = item.metadata?.baseURL
+        const model = item.metadata?.model
+        const key = item.metadata?.key
+        const not_reasoner_model = args[0]
+        const use_not_reasoner_LLM_length = Number(args[1])
+        if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[模型] [触发长度]'
+        if (use_not_reasoner_LLM_length < 0) return '触发长度不能小于0'
+        item.metadata = { key: key, model: model, baseURL: baseURL, not_reasoner_model: not_reasoner_model, use_not_reasoner_LLM_length: use_not_reasoner_LLM_length }
+        item.description = 'on'
+        user.usage = user.usage > 9999 ? user.usage : 9999
+        return '已开启副模型，长度小于：' + use_not_reasoner_LLM_length + '的对话将使用副模型'
+      }
+      else if (args.length === 0 && item.metadata && item.description) {
+        const on = item.description === 'on'
+        if (on && user.usage > 9999)
+          return '今日无法关闭地灵殿通行证'
+        item.description = on ? 'off' : 'on'
+        user.usage = 9999
+        return on ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
+      }
+      return '请先设置基础参数：[baseURL] [encryptedKey] [model]'
     },
     sell: async (user) => {
       const item = user.items['地灵殿通行证']
