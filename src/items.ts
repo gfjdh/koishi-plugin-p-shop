@@ -276,14 +276,14 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '帽子先生',
     price: 5140,
     maxStack: 10,
-    description: '是恋恋的钢盔，无法使用，免疫一次好感度下降后消耗',
+    description: '是恋恋的钢盔，无法使用，免疫一次屏蔽词导致的好感度下降后消耗',
     favorability: 10,
   },
   '谷底小石': {
     id: '谷底小石',
     price: 51400,
     maxStack: 1,
-    description: '恋恋的祝福！持有后好感度不会因为敏感词降低了',
+    description: '恋恋的祝福！持有后好感度不会因为屏蔽词降低了',
     favorability: 3000,
     sell: async (user) => {
       user.favorability -= 10
@@ -339,5 +339,12 @@ export const ITEMS: Record<string, ShopItem> = {
       item.metadata = { clothes: targetClothes.description }
       return '已更换服装：' + targetClothes.id
     }
+  },
+  '点心盒': {
+    id: '点心盒',
+    price: 1000,
+    maxStack: 1,
+    description: '购买后下一次对话将会重置心情为0（无需使用）',
+    favorability: 1000
   }
 }
