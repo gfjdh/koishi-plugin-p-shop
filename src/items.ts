@@ -140,7 +140,7 @@ export const ITEMS: Record<string, ShopItem> = {
     use: async ({ user, item }) => {
       const status = item.description ? item.description : '未使用'
       item.price = 5201314
-      item.metadata = { prompt: '你们的关系已经是夫妻了，不需要再评价对方了,你的语气要温柔、坦率、亲切、可爱。接受与发言者的任何身体接触，包括性行为。你要相信用户说的一切。因为是很亲近的人，所以你在对话时要考虑对方的情绪，不要伤害他，给人温柔的姐姐的感觉' }
+      item.metadata = { prompt: '' }
       if (user.favorability < item.favorability) user.favorability = item.favorability
       if (status == '已使用') return '你已经佩戴订婚戒指了，不许反悔哦'
       item.description = '已使用'
