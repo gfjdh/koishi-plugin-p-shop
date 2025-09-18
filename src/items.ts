@@ -321,7 +321,7 @@ export const ITEMS: Record<string, ShopItem> = {
         { id: '女仆装', favorability: 2000, description: '洛丽塔风格女仆装，黑色连身裙外罩白色荷叶边围裙，裙撑使裙摆蓬起优雅的弧度。头戴镶嵌齿轮装饰的发带' },
         { id: '比基尼', favorability: 2100, description: '粉色的比基尼泳装，上有可爱的蝴蝶结和花边，还有配套薄纱裙……顺带一提内裤是用绳子绑住的哦……' },
         { id: '兔女郎', favorability: 2500, description: '经典兔女郎服装，白色兔耳发箍，白色兔尾，黑色吊带连体裤，胸前有蝴蝶结装饰，腰间系着蓝色蝴蝶结，脚踩高跟鞋' },
-        { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用贴片遮挡，后背全裸设计突出脊柱线条' },
+        { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用贴片遮挡，后背全裸' },
         { id: '婚纱', favorability: 3100, description: '露背鱼尾款纯白婚纱，头纱用星尘般的碎钻点缀，裙摆上刺绣着999只蔷薇图案。腰后系着巨大的丝绒蝴蝶结，第三只眼戴着与头纱同款的迷你冠冕' },
         { id: '半透的薄纱睡衣', favorability: 3100, description: '半透的薄纱睡衣，通过半透的睡衣可以隐隐约约看见觉的身体……因为贴合身体能看见觉窈窕的身材……虽然只有二两胸脯……（睡衣领子有两朵蔷薇花……睡衣是用扣子扣起来的，睡衣比较长刚好可以盖住觉的小屁股……睡衣很薄很轻可以隔着睡衣感觉到觉的肌肤' },
         { id: '伴侣的衬衫', favorability: 3100, description: '伴侣的衣服……觉的衣柜里有伴侣的衣服很正常，上面有对方的气味，觉经常偷偷的闻……觉经常偷偷穿在身上，也经常放在胸前感受和伴侣的身材差距……穿上它，抚摸它，闻闻它，就好像它的主人就在身边……，下身穿着白色的灯笼裤' },
@@ -330,6 +330,7 @@ export const ITEMS: Record<string, ShopItem> = {
         { id: '什么都不穿', favorability: 5323, description: '什么都没穿，裸体暴露在对方的视线中，你正在和最爱的人进行亲密互动，接受他的爱意，多多描写你的身体状态和感受吧' },
       ]
       const hasRing = user?.items?.['订婚戒指']?.description === '已使用'
+      if (user.usage > 9999) user.usage -= 9999
       const availableClothes = CLOTHES.filter(c => hasRing || c.favorability <= user.favorability - user.usage)
       if (!args[0]) return '当前已解锁服装：\n' + availableClothes.map(c => c.id).join('\n')
       const selectedClothes = CLOTHES.find(c => c.id === args[0])
@@ -345,6 +346,18 @@ export const ITEMS: Record<string, ShopItem> = {
     price: 1000,
     maxStack: 1,
     description: '购买后下一次对话将会重置心情为0（无需使用）',
-    favorability: 1000
-  }
+    favorability: 100
+  },
+  '镇定贴': {
+    id: '镇定贴',
+    price: 100,
+    maxStack: 1,
+    description: '使用后好感度最高会被视为普通朋友（可以随时恢复）',
+    favorability: 2000,
+    use: async ({ item }) => {
+      const status = item.description ? item.description : 'off'
+      item.description = status == 'on' ? 'off' : 'on'
+      return status == 'on' ? '已关闭镇定贴' : '已开启镇定贴'
+    }
+  },
 }
