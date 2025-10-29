@@ -360,4 +360,16 @@ export const ITEMS: Record<string, ShopItem> = {
       return status == 'on' ? '已关闭镇定贴' : '已开启镇定贴'
     }
   },
+  '仿制觉之瞳': {
+    id: '仿制觉之瞳',
+    price: 5000,
+    maxStack: 1,
+    description: '使用后可以读觉妖怪的心，但是可能不太稳定',
+    favorability: 3200,
+    use: async ({ item }) => {
+      const status = item.description ? item.description : 'off'
+      item.description = status == 'on' ? 'off' : 'on'
+      return status == 'on' ? '已关闭仿制觉之瞳' : '已开启仿制觉之瞳'
+    }
+  },
 }
