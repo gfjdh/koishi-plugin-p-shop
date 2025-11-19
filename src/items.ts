@@ -183,8 +183,8 @@ export const ITEMS: Record<string, ShopItem> = {
         return '已开启地灵殿通行证'
       }
       else if (args.length === 2 && item.metadata && item.description) {
-        const baseURL = item.metadata?.baseURL
-        const model = item.metadata?.model
+        const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
+        const model = 'deepseek-r1-250528'
         const key = item.metadata?.key
         const not_reasoner_model = 'deepseek-v3-1-terminus'
         const use_not_reasoner_LLM_length = Number(args[1])
