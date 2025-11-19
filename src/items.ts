@@ -169,13 +169,13 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '地灵殿通行证',
     price: 100,
     maxStack: 1,
-    description: '使用自备api并且获得无限对话次数，参数：[baseURL] [encryptedKey] [model]，具体使用方式请加入空间内QQ群并查看精华消息。',
+    description: '使用自备apikey并且获得无限对话次数，参数 [加密后的key] [副模型触发长度(可选)]，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
-      if (args.length === 3) {
-        const baseURL = args[0]
-        const encryptedKey = args[1]
-        const model = args[2]
+      if (args.length === 1) {
+        const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
+        const encryptedKey = args[0]
+        const model = 'deepseek-r1-250528'
         const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
         item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
         item.description = 'on'
@@ -186,9 +186,9 @@ export const ITEMS: Record<string, ShopItem> = {
         const baseURL = item.metadata?.baseURL
         const model = item.metadata?.model
         const key = item.metadata?.key
-        const not_reasoner_model = args[0]
+        const not_reasoner_model = 'deepseek-v3-1-terminus'
         const use_not_reasoner_LLM_length = Number(args[1])
-        if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[模型] [触发长度]'
+        if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[加密后的key] [触发长度]'
         if (use_not_reasoner_LLM_length < 0) return '触发长度不能小于0'
         item.metadata = { key: key, model: model, baseURL: baseURL, not_reasoner_model: not_reasoner_model, use_not_reasoner_LLM_length: use_not_reasoner_LLM_length }
         item.description = 'on'
@@ -203,7 +203,7 @@ export const ITEMS: Record<string, ShopItem> = {
         user.usage = 9999
         return on ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
       }
-      return '设置基础参数或删除副模型：[baseURL] [encryptedKey] [model]，设置副模型：[模型] [触发长度]，配置基础参数后直接使用即可开关地灵殿通行证，详细教程请加空间内QQ群查看精华消息'
+      return '设置基础参数或副模型： [加密后的key] [副模型触发长度(可选)]，配置基础参数后直接使用即可开关地灵殿通行证，详细教程请加空间内QQ群查看精华消息'
     },
     sell: async (user) => {
       const item = user.items['地灵殿通行证']
