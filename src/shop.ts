@@ -182,7 +182,7 @@ export class ShopService {
   }
 
   // 使用道具
-  public async useItem(cfg: Config, ctx: Context, userId: string, itemId: string, args: string[]): Promise<void | string> {
+  public async useItem(cfg: Config, ctx: Context, session: any, userId: string, itemId: string, args: string[]): Promise<void | string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再使用物品哦'
     if (!user.items) return '背包为空'
@@ -191,7 +191,7 @@ export class ShopService {
     const userItem = user.items[itemId]
     const shopItem = this.items[itemId]
     try {
-      const message = await shopItem.use({ user, item: userItem, args }, cfg, ctx)
+      const message = await shopItem.use({ user, item: userItem, args, session }, cfg, ctx)
       if (userItem.count === 0) delete user.items[itemId]
       this.db.updateUser(user)
       if (message) return message

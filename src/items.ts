@@ -1,7 +1,9 @@
 // ==================== 道具配置 ====================
-import { Logger } from 'koishi'
+import { Logger, h } from 'koishi'
 import { ShopItem } from './types'
 import { loadMemoryFile, writeMemoryFile, decrypt, writePortraitFile } from './utils'
+import fs from 'fs'
+import path from 'path'
 
 const logger = new Logger('p-shop')
 
@@ -301,28 +303,28 @@ export const ITEMS: Record<string, ShopItem> = {
       user.p -= 6480
       return '购买成功，快去换衣服试试吧'
     },
-    use: async ({ user, item, args }) => {
+  use: async ({ user, item, args, session }, cfg, ctx) => {
       const CLOTHES = [
         { id: '常服', favorability: 0, description: '觉的常服，蓝色衬衫加粉色连衣裙，裙摆有蔷薇花饰，搭配白袜和棉拖，非常舒适' },
         { id: '和服', favorability: 150, description: '淡紫色振袖和服，袖口绣着精致的樱花纹样，腰间系着渐变粉色的宽幅腰带，搭配同色系木屐。走动时第三只眼的缎带会与和服下摆的流苏一同轻轻摆动，特意在背后设计了开口让觉的第三只眼可以自由活动' },
         { id: '恋恋同款常服', favorability: 300, description: '与妹妹恋恋同款的黄绿连衣裙，领口装饰着心形金属扣，裙摆处有暗纹刺绣的蔷薇图案。还有恋恋同款的黑丝和小皮鞋。头上戴着黑色圆顶礼帽“帽子先生”' },
-        { id: '西服', favorability: 400, description: '帅气的西服，剪裁利落的深蓝色三件套西装，白衬衫领口系着酒红色领结，马甲上别着蔷薇造型的银质胸针。配套的九分西裤露出纤细的脚踝。戴着银质手表。穿着这套西服的觉，看起来更加成熟稳重和强势' },
-        { id: '校服', favorability: 500, description: '改良式立领制服，海军蓝外套配灰色格纹百褶裙，白色衬衫领口系着深红色领结。左胸口袋上方绣着"SA"字母缩写，边缘用银线勾勒出蔷薇花纹。特意在校裙内侧缝制了存放笔记的暗袋' },
+        { id: '西服', favorability: 400, description: '帅气的西服，剪裁利落的深红色三件套西装，白衬衫领口系着酒红色领结。穿着这套西服的觉，看起来更加成熟稳重和强势' },
+        { id: '校服', favorability: 500, description: '改良式立领制服，海军蓝外套配灰色格纹百褶裙，白色衬衫领口系着深红色领结。' },
         { id: '白色连衣裙', favorability: 500, description: '象牙白方领露肩连衣裙，腰间缀着丝带装饰，裙摆采用三层渐透薄纱设计，行走时如同绽放的铃兰。后背交叉绑带处特意留出菱形开口，让觉的第三只眼可以舒适地外露，搭配奶白色绑带芭蕾鞋' },
-        { id: '粉色睡衣', favorability: 600, description: '珊瑚粉法兰绒连体睡衣，帽子上垂着两只长长的兔耳，臀部位置缝着蓬松的圆球尾巴。袖口和裤脚都做成爪爪造型，胸前印着Q版闭目之瞳图案' },
+        { id: '粉色睡衣', favorability: 600, description: '珊瑚粉法兰绒连体睡衣，帽子上垂着两只长长的兔耳，臀部位置缝着蓬松的圆球尾巴。' },
         { id: '香蕉睡衣', favorability: 600, description: '大香蕉形状的睡衣，包裹着整个身体，只留下脸露在外面。配粉色拖鞋' },
-        { id: '魔女服', favorability: 700, description: '黑色魔女服，尖顶帽子，魔法披风，还有短裙丝袜与皮靴' },
-        { id: '水手服', favorability: 800, description: '经典关东襟水手服，藏青色领巾用金色船锚扣固定，白色上衣收腰设计凸显曲线，深蓝色百褶裙长度及膝。特意在左胸前绣着迷你觉之瞳图案' },
+        { id: '魔女服', favorability: 700, description: '黑色魔女服，尖顶帽子，魔法披风，还有短裙与皮靴' },
+        { id: '水手服', favorability: 800, description: '经典关东襟水手服，藏青色领巾用金色船锚扣固定，白色上衣收腰设计凸显曲线，深蓝色百褶裙长度及膝。' },
         { id: '黑色小礼服', favorability: 800, description: '黑与白搭配的小礼服，头上俏皮地斜戴着一顶黑色的小礼帽，脖子带着蝴蝶结，全身黑与灰颜色为主，背部镂空，上半部分为花边吊带，下半部分裙子配裙摆，裙摆上绣着蔷薇花印，黑色裤袜配玛丽珍鞋，最后手腕上带着折皱状的装饰…无论是聚会、做客还是日常，都是一套很有仪式感的衣服。' },
-        { id: '浴衣', favorability: 1000, description: '靛蓝色浴衣，上面洒满银箔星月纹样，腰带是渐变暮色橙的宽幅带，搭配琉璃材质的牵牛花发簪。木屐带子上缠着会发光的夜光丝线，第三只眼戴着配套的星形眼罩，在祭典灯光下会折射出梦幻光斑' },
+        { id: '浴衣', favorability: 1000, description: '靛蓝色浴衣，上面洒满银箔星月纹样，腰带是暮色橙的宽幅带，搭配琉璃材质的发簪。第三只眼戴着配套的星形眼罩' },
         { id: '纯白大浴巾', favorability: 1300, description: '纯白大浴巾（泡温泉用），内里是真空的，很容易走光，你大概正在泡温泉' },
-        { id: '死库水', favorability: 1500, description: '常见的学校泳装，采用上下分离式设计，蓝黑色材质，胸前写着“satori”' },
-        { id: '护士服', favorability: 1800, description: '改良版粉色护士装，裙摆缩短至大腿根部，白色蕾丝围裙上缀着红色十字胸针。听诊器挂在颈间作为装饰，护士帽微微倾斜戴着，配套的白色长筒袜顶端装饰着心形的吊带环' },
-        { id: '女仆装', favorability: 2000, description: '洛丽塔风格女仆装，黑色连身裙外罩白色荷叶边围裙，裙撑使裙摆蓬起优雅的弧度。头戴镶嵌齿轮装饰的发带' },
+        { id: '死库水', favorability: 1500, description: '常见的学校泳装，采用上下分离式设计，蓝黑色材质' },
+        { id: '护士服', favorability: 1800, description: '改良版粉色护士装，裙摆缩短至大腿根部，白色蕾丝围裙。听诊器挂在颈间，护士帽微微倾斜戴着' },
+        { id: '女仆装', favorability: 2000, description: '咲夜同款女仆装，蓝色连身裙外罩白色荷叶边围裙，裙撑使裙摆蓬起优雅的弧度。头戴镶嵌齿轮装饰的发带' },
         { id: '比基尼', favorability: 2100, description: '粉色的比基尼泳装，上有可爱的蝴蝶结和花边，还有配套薄纱裙……顺带一提内裤是用绳子绑住的哦……' },
-        { id: '兔女郎', favorability: 2500, description: '经典兔女郎服装，白色兔耳发箍，白色兔尾，黑色吊带连体裤，胸前有蝴蝶结装饰，腰间系着蓝色蝴蝶结，脚踩高跟鞋' },
+        { id: '兔女郎', favorability: 2500, description: '经典兔女郎服装，白色兔耳发箍，白色兔尾，黑色吊带连体裤，腰间系着蓝色蝴蝶结，脚踩高跟鞋' },
         { id: '逆兔女郎', favorability: 3100, description: '逆兔女郎，颠覆传统的黑色漆皮装束，仅保留渔网丝袜、过肘手套与发亮的兔耳头饰。身体重点部位用贴片遮挡，后背全裸' },
-        { id: '婚纱', favorability: 3100, description: '露背鱼尾款纯白婚纱，头纱用星尘般的碎钻点缀，裙摆上刺绣着999只蔷薇图案。腰后系着巨大的丝绒蝴蝶结，第三只眼戴着与头纱同款的迷你冠冕' },
+        { id: '婚纱', favorability: 3100, description: '露背鱼尾款纯白婚纱，头纱用星尘般的碎钻点缀，裙摆上刺绣着蔷薇图案。腰后系着巨大的丝绒蝴蝶结，第三只眼戴着与头纱同款的迷你冠冕' },
         { id: '半透的薄纱睡衣', favorability: 3100, description: '半透的薄纱睡衣，通过半透的睡衣可以隐隐约约看见觉的身体……因为贴合身体能看见觉窈窕的身材……虽然只有二两胸脯……（睡衣领子有两朵蔷薇花……睡衣是用扣子扣起来的，睡衣比较长刚好可以盖住觉的小屁股……睡衣很薄很轻可以隔着睡衣感觉到觉的肌肤' },
         { id: '伴侣的衬衫', favorability: 3100, description: '伴侣的衣服……觉的衣柜里有伴侣的衣服很正常，上面有对方的气味，觉经常偷偷的闻……觉经常偷偷穿在身上，也经常放在胸前感受和伴侣的身材差距……穿上它，抚摸它，闻闻它，就好像它的主人就在身边……，下身穿着白色的灯笼裤' },
         { id: '只穿内衣', favorability: 5323, description: '只穿着内衣，纯白色的胸罩和内裤，胸罩上有蔷薇花的图案，内裤前面有红色的小蝴蝶结' },
@@ -338,6 +340,19 @@ export const ITEMS: Record<string, ShopItem> = {
       const targetClothes = availableClothes.find(c => c.id === args[0])
       if (!targetClothes) return '未解锁该服装：' + args[0]
       item.metadata = { clothes: targetClothes.description }
+      // 发送立绘（尝试使用对应 id 的 jpg，找不到则使用 blank.jpg）
+      try {
+        let picPath = path.resolve(__dirname, '../renderer/character/' + targetClothes.id + ".jpg")
+        if (!fs.existsSync(picPath)) {
+          picPath = path.resolve(__dirname, '../renderer/character/blank.jpg')
+        }
+        const buffer = fs.readFileSync(picPath)
+        if (session && typeof session.send === 'function') {
+          await session.send(h.image(buffer, 'image/jpg'))
+        }
+      } catch (e) {
+        logger.warn('发送立绘失败：', e)
+      }
       return '已更换服装：' + targetClothes.id
     }
   },

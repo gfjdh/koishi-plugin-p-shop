@@ -1,4 +1,4 @@
-import { Context } from 'koishi'
+import { Context, Session } from 'koishi'
 import { Config } from '.'
 
 //记忆配置
@@ -44,4 +44,5 @@ export interface ItemUseContext {
   user: UserData
   item: UserItem
   args: string[]
+  session?: Session
 }

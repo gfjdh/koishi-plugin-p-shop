@@ -45,7 +45,7 @@ export function apply(ctx: Context, cfg: Config) {
   ctx.command('p/p-sell <id> [amount:number]').alias('出售道具')
     .action(async ({ session }, id, amount = 1) => { return await shop.sellItem(ctx, session.userId, id, amount) })
   ctx.command('p/p-use <id> [...args]').alias('使用道具')
-    .action(async ({ session }, id, ...args) => { return await shop.useItem(cfg, ctx, session.userId, id, args) })
+    .action(async ({ session }, id, ...args) => { return await shop.useItem(cfg, ctx, session, session.userId, id, args) })
   ctx.command('p/p-item <id>').alias('查看道具')
     .action(async ({ session }, id) => {
       if (ctx.puppeteer && !shop.puppeteerReady()) {
