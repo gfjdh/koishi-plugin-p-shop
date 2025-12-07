@@ -174,10 +174,15 @@ export const ITEMS: Record<string, ShopItem> = {
     description: '使用自备apikey并且获得无限对话次数，参数 [加密后的key] [副模型触发长度(可选)]，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
+      const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
+      const model = 'deepseek-r1-250528'
+      const not_reasoner_model = 'deepseek-v3-2-251201'
+      item.metadata.baseURL = baseURL
+      item.metadata.model = model
+      item.metadata.not_reasoner_model = not_reasoner_model
+
       if (args.length === 1) {
-        const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
         const encryptedKey = args[0]
-        const model = 'deepseek-r1-250528'
         const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
         item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
         item.description = 'on'
@@ -185,14 +190,10 @@ export const ITEMS: Record<string, ShopItem> = {
         return '已开启地灵殿通行证'
       }
       else if (args.length === 2 && item.metadata && item.description) {
-        const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
-        const model = 'deepseek-r1-250528'
-        const key = item.metadata?.key
-        const not_reasoner_model = 'deepseek-v3-1-terminus'
         const use_not_reasoner_LLM_length = Number(args[1])
         if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[加密后的key] [触发长度]'
         if (use_not_reasoner_LLM_length < 0) return '触发长度不能小于0'
-        item.metadata = { key: key, model: model, baseURL: baseURL, not_reasoner_model: not_reasoner_model, use_not_reasoner_LLM_length: use_not_reasoner_LLM_length }
+        item.metadata.use_not_reasoner_LLM_length = use_not_reasoner_LLM_length
         item.description = 'on'
         user.usage = user.usage > 9999 ? user.usage : 9999
         return '已开启副模型，长度小于：' + use_not_reasoner_LLM_length + '的对话将使用副模型'
@@ -304,7 +305,7 @@ export const ITEMS: Record<string, ShopItem> = {
       return '购买成功，快去换衣服试试吧'
     },
   use: async ({ user, item, args, session }, cfg, ctx) => {
-      const CLOTHES = [
+      let CLOTHES = [
         { id: '常服', favorability: 0, description: '觉的常服，蓝色衬衫加粉色连衣裙，裙摆有蔷薇花饰，搭配白袜和棉拖，非常舒适' },
         { id: '和服', favorability: 150, description: '淡紫色振袖和服，袖口绣着精致的樱花纹样，腰间系着渐变粉色的宽幅腰带，搭配同色系木屐。走动时第三只眼的缎带会与和服下摆的流苏一同轻轻摆动，特意在背后设计了开口让觉的第三只眼可以自由活动' },
         { id: '恋恋同款常服', favorability: 300, description: '与妹妹恋恋同款的黄绿连衣裙，领口装饰着心形金属扣，裙摆处有暗纹刺绣的蔷薇图案。还有恋恋同款的黑丝和小皮鞋。头上戴着黑色圆顶礼帽“帽子先生”' },
@@ -331,6 +332,12 @@ export const ITEMS: Record<string, ShopItem> = {
         { id: '只穿白丝', favorability: 5323, description: '只穿着白丝，其他部位全部裸露，你正在和最爱的人进行亲密互动，接受他的爱意，多多描写你的身体状态和感受吧' },
         { id: '什么都不穿', favorability: 5323, description: '什么都没穿，裸体暴露在对方的视线中，你正在和最爱的人进行亲密互动，接受他的爱意，多多描写你的身体状态和感受吧' },
       ]
+      // 圣诞节特别服装
+      const now = new Date()
+      if (now.getMonth() === 12 && now.getDate() >= 24 && now.getDate() <= 26) {
+        CLOTHES.push({ id: '圣诞装', favorability: 1000, description: '圣诞节特别服装，红白相间的圣诞连衣裙，裙摆和袖口镶着白色毛绒边饰，腰间系着黑色宽腰带，头戴红色圣诞帽，脚踩棕色短靴' })
+      }
+
       const hasRing = user?.items?.['订婚戒指']?.description === '已使用'
       if (user.usage > 9999) user.usage -= 9999
       const availableClothes = CLOTHES.filter(c => hasRing || c.favorability <= user.favorability - user.usage)
