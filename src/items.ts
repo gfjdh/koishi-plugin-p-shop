@@ -177,14 +177,18 @@ export const ITEMS: Record<string, ShopItem> = {
       const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
       const model = 'deepseek-r1-250528'
       const not_reasoner_model = 'deepseek-v3-2-251201'
-      item.metadata.baseURL = baseURL
-      item.metadata.model = model
-      item.metadata.not_reasoner_model = not_reasoner_model
+      item.metadata = {
+        model: model,
+        baseURL: baseURL,
+        use_not_reasoner_model: not_reasoner_model,
+        use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
+        key: item.metadata?.key || '',
+      }
 
       if (args.length === 1) {
         const encryptedKey = args[0]
         const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
-        item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
+        item.metadata.key = decryptedKey
         item.description = 'on'
         user.usage = user.usage > 9999 ? user.usage : 9999
         return '已开启地灵殿通行证'
@@ -335,7 +339,7 @@ export const ITEMS: Record<string, ShopItem> = {
       // 圣诞节特别服装
       const now = new Date()
       if (now.getMonth() === 12 && now.getDate() >= 24 && now.getDate() <= 26) {
-        CLOTHES.push({ id: '圣诞装', favorability: 1000, description: '圣诞节特别服装，红白相间的圣诞连衣裙，裙摆和袖口镶着白色毛绒边饰，腰间系着黑色宽腰带，头戴红色圣诞帽，脚踩棕色短靴' })
+        CLOTHES.push({ id: '圣诞装', favorability: 200, description: '圣诞节特别服装，红白相间的圣诞连衣裙，裙摆和袖口镶着白色毛绒边饰，腰间系着黑色宽腰带，头戴红色圣诞帽，脚踩棕色短靴' })
       }
 
       const hasRing = user?.items?.['订婚戒指']?.description === '已使用'
