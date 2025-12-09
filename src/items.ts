@@ -174,17 +174,24 @@ export const ITEMS: Record<string, ShopItem> = {
     description: '使用自备apikey并且获得无限对话次数，参数 [加密后的key] [副模型触发长度(可选)]，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
-      const baseURL = 'https://ark.cn-beijing.volces.com/api/v3'
-      const model = 'deepseek-r1-250528'
-      const not_reasoner_model = 'deepseek-v3-2-251201'
-      item.metadata = {
-        model: model,
-        baseURL: baseURL,
-        use_not_reasoner_model: not_reasoner_model,
-        use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
-        key: item.metadata?.key || '',
+      if (args.length === 1 && args[0] === 'ds') {
+        item.metadata = {
+          model: 'deepseek-reasoner',
+          baseURL: 'https://api.deepseek.com',
+          not_reasoner_model: 'deepseek-chat',
+          use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
+          key: item.metadata?.key || '',
+        }
+        return '供应商已设置为DeepSeek'
+      } else {
+        item.metadata = {
+          model: 'deepseek-v3-2-251201',
+          baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
+          not_reasoner_model: 'deepseek-v3-2-251201',
+          use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
+          key: item.metadata?.key || '',
+        }
       }
-
       if (args.length === 1) {
         const encryptedKey = args[0]
         const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
