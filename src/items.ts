@@ -182,12 +182,12 @@ export const ITEMS: Record<string, ShopItem> = {
           use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
           key: item.metadata?.key || '',
         }
-        return '供应商已设置为DeepSeek'
+        return '供应商已设置为DeepSeek，通行证状态：' + (item.description === 'on' ? '开启' : '关闭')
       } else {
         item.metadata = {
-          model: 'deepseek-v3-2-251201',
+          model: 'deepseek-v4-1-flash-260910',
           baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-          not_reasoner_model: 'deepseek-v3-2-251201',
+          not_reasoner_model: 'deepseek-v4-1-flash-260910',
           use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
           key: item.metadata?.key || '',
         }
@@ -345,8 +345,9 @@ export const ITEMS: Record<string, ShopItem> = {
       ]
       // 圣诞节特别服装
       const now = new Date()
-      if (now.getMonth() === 12 && now.getDate() >= 24 && now.getDate() <= 26) {
+      if (now.getMonth() === 11 && now.getDate() >= 24 && now.getDate() <= 26) {
         CLOTHES.push({ id: '圣诞装', favorability: 200, description: '圣诞节特别服装，红白相间的圣诞连衣裙，裙摆和袖口镶着白色毛绒边饰，腰间系着黑色宽腰带，头戴红色圣诞帽，脚踩棕色短靴' })
+        CLOTHES.sort((a, b) => a.favorability - b.favorability)
       }
 
       const hasRing = user?.items?.['订婚戒指']?.description === '已使用'
