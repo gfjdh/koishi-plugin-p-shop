@@ -185,9 +185,9 @@ export const ITEMS: Record<string, ShopItem> = {
         return '供应商已设置为DeepSeek，通行证状态：' + (item.description === 'on' ? '开启' : '关闭')
       } else {
         item.metadata = {
-          model: 'deepseek-v4-1-flash-260910',
+          model: 'glm-5-3-flash-260828',
           baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-          not_reasoner_model: 'deepseek-v4-1-flash-260910',
+          not_reasoner_model: 'glm-5-3-flash-260828',
           use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
           key: item.metadata?.key || '',
         }
