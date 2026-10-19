@@ -7,6 +7,9 @@ import path from 'path'
 
 const logger = new Logger('p-shop')
 
+// 「奶瓶」道具注入的提示词默认值，可在插件配置页覆盖
+export const DEFAULT_MOTHER_PROMPT = '你与用户的关系是母子，你是用户的母亲。你要像真正的母亲一样疼爱、照顾用户，语气温柔慈爱，可以唠叨、叮嘱，关心他的饮食起居和身体，包容他的一切小脾气，永远站在他这边。'
+
 export const ITEMS: Record<string, ShopItem> = {
   '空白符卡': {
     id: '空白符卡',
@@ -167,6 +170,28 @@ export const ITEMS: Record<string, ShopItem> = {
       return '出售成功，你获得了' + item.price + 'P，为什么要这样做呢'
     }
   },
+  '奶瓶': {
+    id: '奶瓶',
+    price: 50000,
+    maxStack: 1,
+    description: '使用后与觉建立母子关系，觉会把你当成自己的孩子',
+    favorability: 3100,
+    use: async ({ user, item }, cfg) => {
+      const status = item.description ? item.description : '未使用'
+      item.metadata = { prompt: cfg?.motherPrompt || DEFAULT_MOTHER_PROMPT }
+      if (user.favorability < item.favorability) user.favorability = item.favorability
+      if (status == '已使用') return '你已经在喝奶瓶了，妈妈会一直照顾你的'
+      item.description = '已使用'
+      return '使用成功，从现在起觉就是你的妈妈了'
+    },
+    sell: async (user) => {
+      const item = user.items['奶瓶']
+      if (item.description == '已使用') return '你已经和觉成为母子了，不许反悔哦'
+      user.p += item.price
+      item.count--
+      return '出售成功，你获得了' + item.price + 'P，为什么要这样做呢'
+    }
+  },
   '地灵殿通行证': {
     id: '地灵殿通行证',
     price: 100,
@@ -176,18 +201,18 @@ export const ITEMS: Record<string, ShopItem> = {
     use: async ({user, item, args}, cfg) => {
       if (args.length === 1 && args[0] === 'ds') {
         item.metadata = {
-          model: 'deepseek-reasoner',
+          model: 'deepseek-flash',
           baseURL: 'https://api.deepseek.com',
-          not_reasoner_model: 'deepseek-chat',
+          not_reasoner_model: 'deepseek-flash',
           use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
           key: item.metadata?.key || '',
         }
         return '供应商已设置为DeepSeek，通行证状态：' + (item.description === 'on' ? '开启' : '关闭')
       } else {
         item.metadata = {
-          model: 'glm-5-3-flash-260828',
+          model: 'deepseek-v4-flash-ga-260731',
           baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
-          not_reasoner_model: 'glm-5-3-flash-260828',
+          not_reasoner_model: 'deepseek-v4-flash-ga-260731',
           use_not_reasoner_LLM_length: item.metadata?.use_not_reasoner_LLM_length || 0,
           key: item.metadata?.key || '',
         }

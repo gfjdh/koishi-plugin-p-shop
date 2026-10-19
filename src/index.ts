@@ -1,6 +1,7 @@
 import { Context, Schema } from 'koishi'
 import { ShopService } from './shop';
 import { decrypt, encrypt } from './utils';
+import { DEFAULT_MOTHER_PROMPT } from './items';
 export const name = 'p-shop'
 
 export const usage = `
@@ -16,11 +17,13 @@ export const inject = {
 export interface Config {
   dataDir: string
   secretKey: string
+  motherPrompt: string
 }
 
 export const Config: Schema<Config> = Schema.object({
   dataDir: Schema.string().default("./data").description("数据目录"),
   secretKey: Schema.string().default('abc').role('secret').description("加密用密钥"),
+  motherPrompt: Schema.string().role('textarea').default(DEFAULT_MOTHER_PROMPT).description("【奶瓶】使用后注入的提示词：让觉把自己当成用户的妈妈。修改后需重新使用奶瓶才会生效。"),
 })
 
 
