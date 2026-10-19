@@ -5,8 +5,11 @@ import { DEFAULT_MOTHER_PROMPT } from './items';
 export const name = 'p-shop'
 
 export const usage = `
-- **指令：p-shop**\n
-    别名：p点商店\n
+- **指令：p-shop [道具名] [页码]**\n
+    别名：查看商店\n
+    每页显示 5 件，例如“查看商店 2”翻到第 2 页，“查看商店 消忆药水”查看详情\n
+- **指令：p-bag [页码]**\n
+    别名：查看背包\n
     `;
 
 export const inject = {
@@ -29,19 +32,24 @@ export const Config: Schema<Config> = Schema.object({
 
 export function apply(ctx: Context, cfg: Config) {
   const shop = new ShopService(ctx, cfg)
-  ctx.command('p/p-shop <id>').alias('查看商店')
-    .action(async ({ session }, id = '') => {
+  ctx.command('p/p-shop [id] [page:number]').alias('查看商店')
+    .action(async ({ session }, id = '', page?: number) => {
       if (ctx.puppeteer && !shop.puppeteerReady()) {
         shop.setPuppeteer(ctx.puppeteer)
       }
-      return await shop.viewShop(session.userId, id)
+      // 第一个参数是纯数字时按页码处理
+      if (/^\d+$/.test(id)) {
+        page = Number(id)
+        id = ''
+      }
+      return await shop.viewShop(session.userId, id, page)
     })
-  ctx.command('p/p-bag').alias('查看背包')
-    .action(async ({ session }) => {
+  ctx.command('p/p-bag [page:number]').alias('查看背包')
+    .action(async ({ session }, page?: number) => {
       if (ctx.puppeteer && !shop.puppeteerReady()) {
         shop.setPuppeteer(ctx.puppeteer)
       }
-      return await shop.viewBag(session.userId)
+      return await shop.viewBag(session.userId, page)
     })
   ctx.command('p/p-buy <id> [amount:number]').alias('购买道具')
     .action(async ({ session }, id, amount = 1) => { return await shop.buyItem(ctx, session.userId, id, amount) })

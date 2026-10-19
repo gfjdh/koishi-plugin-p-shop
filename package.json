@@ -7,6 +7,7 @@
   "types": "lib/index.d.ts",
   "files": [
     "lib",
+    "renderer/satori-p-shop",
     "README.md"
   ],
   "license": "MIT",

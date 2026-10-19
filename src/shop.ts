@@ -61,8 +61,22 @@ export class ShopService {
       .map((ShopItem) => (ShopItem))
   }
 
+  // 供图片渲染使用的道具描述
+  private getDescriptions(): Record<string, string> {
+    const descriptions: Record<string, string> = {}
+    for (const [id, item] of Object.entries(this.items)) {
+      if (item.description) descriptions[id] = item.description
+    }
+    return descriptions
+  }
+
+  // 全部道具 id，用于背包里判断获取方式
+  private getShopIds(): string[] {
+    return Object.keys(this.items)
+  }
+
   // 查看商店
-  public async viewShop(userId: string, itemId: string = ''): Promise<string> {
+  public async viewShop(userId: string, itemId: string = '', page?: number): Promise<string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再查看商店哦'
     const items = this.getShopItems(user)
@@ -72,7 +86,14 @@ export class ShopService {
       if (!targetItem) return '物品不存在'
       if (this.puppeteer) {
         try {
-          return await renderViewShop(this.puppeteer, items, targetItem)
+          return await renderViewShop(this.puppeteer, items, {
+            balance: user.p,
+            selectedId: itemId,
+            page,
+            inventory: user.items,
+            descriptions: this.getDescriptions(),
+            shopIds: this.getShopIds(),
+          })
         } catch (error) {
           logger.warn('Puppeteer错误；', error)
         }
@@ -80,7 +101,13 @@ export class ShopService {
       return `物品：${targetItem.id}\n价格：${targetItem.price}P\n描述：${targetItem.description}\n持有上限：${targetItem.maxStack}`
     } else {
       try {
-        return await renderViewShop(this.puppeteer, items)
+        return await renderViewShop(this.puppeteer, items, {
+          balance: user.p,
+          page,
+          inventory: user.items,
+          descriptions: this.getDescriptions(),
+          shopIds: this.getShopIds(),
+        })
       } catch (error) {
         logger.warn('Puppeteer错误；', error)
         let message = '当前可购买的道具列表：\n'
@@ -93,7 +120,7 @@ export class ShopService {
   }
 
   // 查看背包
-  public async viewBag(userId: string): Promise<string> {
+  public async viewBag(userId: string, page?: number): Promise<string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再查看背包哦'
     if (!user.items || Object.keys(user.items).length === 0) return '你的背包为空'
@@ -104,7 +131,12 @@ export class ShopService {
         for (const key in user.items) {
           items.push(user.items[key])
         }
-        return await renderViewBag(this.puppeteer, items);
+        return await renderViewBag(this.puppeteer, items, {
+          page,
+          inventory: user.items,
+          descriptions: this.getDescriptions(),
+          shopIds: this.getShopIds(),
+        });
       } catch (error) {
         logger.warn('Puppeteer错误；', error)
       }
@@ -210,7 +242,9 @@ export class ShopService {
     if (this.puppeteer) {
       try {
         const shopItem = this.items[itemId]
-        return await renderViewItem(this.puppeteer, user.items[itemId], shopItem ? shopItem.description : '')
+        return await renderViewItem(this.puppeteer, user.items[itemId], shopItem ? shopItem.description : '', {
+          shopIds: this.getShopIds(),
+        })
       } catch (error) {
         logger.warn('Puppeteer错误；', error)
       }
