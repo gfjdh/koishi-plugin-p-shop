@@ -23,7 +23,7 @@ export interface Config {
 export const Config: Schema<Config> = Schema.object({
   dataDir: Schema.string().default("./data").description("数据目录"),
   secretKey: Schema.string().default('abc').role('secret').description("加密用密钥"),
-  motherPrompt: Schema.string().role('textarea').default(DEFAULT_MOTHER_PROMPT).description("【奶瓶】使用后注入的提示词：让觉把自己当成用户的妈妈。修改后需重新使用奶瓶才会生效。"),
+  motherPrompt: Schema.string().role('textarea').default(DEFAULT_MOTHER_PROMPT).description("【奶瓶】开启时注入的提示词：让觉把自己当成用户的妈妈。修改后需关掉奶瓶再重新开启才会生效。"),
 })
 
 

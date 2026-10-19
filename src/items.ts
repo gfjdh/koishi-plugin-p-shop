@@ -174,22 +174,18 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '奶瓶',
     price: 50000,
     maxStack: 1,
-    description: '使用后与觉建立母子关系，觉会把你当成自己的孩子',
+    description: '使用后与觉建立母子关系，觉会把你当成自己的孩子，再次使用可解除',
     favorability: 3100,
     use: async ({ user, item }, cfg) => {
-      const status = item.description ? item.description : '未使用'
+      const status = item.description ? item.description : 'off'
+      if (status == 'on') {
+        item.description = 'off'
+        return '已解除母子关系，随时可以再喝'
+      }
       item.metadata = { prompt: cfg?.motherPrompt || DEFAULT_MOTHER_PROMPT }
       if (user.favorability < item.favorability) user.favorability = item.favorability
-      if (status == '已使用') return '你已经在喝奶瓶了，妈妈会一直照顾你的'
-      item.description = '已使用'
+      item.description = 'on'
       return '使用成功，从现在起觉就是你的妈妈了'
-    },
-    sell: async (user) => {
-      const item = user.items['奶瓶']
-      if (item.description == '已使用') return '你已经和觉成为母子了，不许反悔哦'
-      user.p += item.price
-      item.count--
-      return '出售成功，你获得了' + item.price + 'P，为什么要这样做呢'
     }
   },
   '地灵殿通行证': {
