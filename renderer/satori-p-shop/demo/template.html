@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>觉 · P 点商店与背包 | 品红初版</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,"Microsoft YaHei",sans-serif;background:#111217;color:#f5f4f1;--pink:#f50079}*{box-sizing:border-box}body{margin:0;padding:25px 3vw 42px}header{max-width:1600px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:20px}.eyebrow{font-size:12px;letter-spacing:.22em;color:var(--pink)}h1{font-size:22px;margin:5px 0;font-weight:750}.edition{font-size:12px;color:#9b9aa4}.frame{max-width:1600px;margin:auto;border:1px solid #33343d;background:#17181e;box-shadow:0 16px 60px #0006}canvas{width:100%;height:auto;display:block;touch-action:manipulation;cursor:pointer}button,input,textarea,select{font:inherit}button{background:#23242d;color:#f5f4f1;border:1px solid #41424e;padding:10px 16px;cursor:pointer;font-size:13px}button:hover,button:focus-visible{border-color:var(--pink)}button.active,button.primary{background:var(--pink);border-color:var(--pink);color:white}button:disabled{opacity:.4;cursor:default}.toolbar{max-width:1600px;margin:16px auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.toolbar .spacer{flex:1}.status{font-size:12px;color:#a6a5ad;margin-right:10px}.editor{max-width:1600px;margin:24px auto 0;border-top:1px solid #383943;padding-top:14px}.editor summary{cursor:pointer;font-size:14px;color:#d4d3da}.form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:22px}.field{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#aaa9b2}.field.wide{grid-column:1/-1}.field input,.field select,.field textarea{background:#1c1d25;border:1px solid #3e3f48;border-radius:0;color:#fff;padding:10px 12px;width:100%;font-size:14px}.field textarea{resize:vertical;line-height:1.7}.field input:focus,.field textarea:focus,.field select:focus{outline:1px solid var(--pink)}.check{display:flex;align-items:center;gap:9px;font-size:13px;color:#c3c2c9}.actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0}.help{font-size:12px;color:#92919c;line-height:1.8;margin:14px 0}.notice{color:#ee8abb;font-size:12px}.note{max-width:1600px;margin:15px auto;color:#8e8d97;font-size:12px;line-height:1.8}.id{font:12px ui-monospace,monospace;color:#92919c}.hidden{display:none}a{color:#e5aecb}.fatal{padding:24px;color:#ff8bbb}kbd{font-size:11px;padding:2px 5px;background:#30313a}@media(max-width:700px){body{padding:16px 12px 30px}.form{grid-template-columns:1fr}.field.wide{grid-column:auto}.edition{display:none}.toolbar .spacer{display:none}.status{width:100%}h1{font-size:18px}button{padding:9px 12px}}
+</style>
+<header><div><div class="eyebrow">SATORI / P POINT</div><h1>地灵殿 · 商店与背包</h1></div><div class="edition" id="edition">品红初版 · 26 件道具 · 本地演示</div></header>
+<main>
+ <div class="frame"><canvas id="screen" width="1600" height="900" tabindex="0" aria-label="觉的 P 点商店与背包。可点击物品查看说明，也可使用下方控件。"></canvas><div id="fatal" class="fatal hidden"></div></div>
+ <div class="toolbar"><button id="shopBtn" class="active">商店</button><button id="bagBtn">背包</button><button id="prevBtn" aria-label="上一页">← 上一页</button><button id="nextBtn" aria-label="下一页">下一页 →</button><span id="pageStatus" class="status"></span><span class="spacer"></span><button id="savePng">导出当前 PNG</button><button id="importCatalog">导入道具配置</button><input id="catalogFile" class="hidden" type="file" accept=".json,application/json"><button id="exportCatalog">导出道具配置</button></div>
+ <p class="note">点选画面中的物品查看详情。也可用 <kbd>↑</kbd> <kbd>↓</kbd> 切换物品、<kbd>←</kbd> <kbd>→</kbd> 翻页。这里使用示例余额和库存，配置可导出给原 bot 接入。</p>
+ <details class="editor"><summary>编辑选中道具 · 描述与获取方式</summary>
+  <form id="editForm">
+   <div class="form">
+    <label class="field">名称<input id="itemName" required maxlength="60"><span class="id" id="itemId"></span></label>
+    <label class="field">展示价格（P）<input id="itemPrice" type="number" min="0" step="1" required></label>
+    <label class="field">示例库存数量<input id="itemQty" type="number" min="0" step="1" required></label>
+    <label class="field wide">道具描述<textarea id="description" rows="3" placeholder="填写道具介绍或效果。画面预留三行，较长内容会自动省略。"></textarea></label>
+    <label class="field">获取途径<select id="sourceType"><option value="shop">P点商店</option><option value="event">活动奖励</option><option value="drop">掉落</option><option value="exchange">兑换</option><option value="achievement">成就奖励</option><option value="gift">赠送</option><option value="other">其他途径</option></select></label>
+    <label class="field">获取方式显示名称<input id="sourceLabel" maxlength="100" placeholder="例如：觉之日活动"></label>
+    <label class="field">获取方式补充说明<input id="sourceDetail" maxlength="500" placeholder="留给接入方填写"></label>
+    <label class="check"><input id="sourceEnabled" type="checkbox" checked>启用这条获取途径</label>
+   </div>
+   <p class="help">把获取途径从“P点商店”改成“活动奖励”等，物品即从商店移除，已有背包物品仍保留。此编辑器调整第一条获取途径；多条途径可在导出的 acquisition 数组中继续添加。</p>
+   <div class="actions"><button class="primary" type="submit">应用到预览</button><button id="viewOwned" type="button">在背包查看</button><button id="restoreDemo" type="button">恢复初始演示</button><span id="notice" class="notice" role="status" aria-live="polite"></span></div>
+  </form>
+ </details>
+</main>
+<script>window.SATORI_PAYLOAD=__PAYLOAD__;</script>
+<script>__CORE__</script>
+<script>__PAINT__</script>
+<script>__CLIENT__</script>
+</html>

@@ -1,0 +1,418 @@
+[
+  {
+    "id": "satori-fumo",
+    "name": "觉fumo",
+    "price": 9999,
+    "category": "收藏",
+    "icon": "fumo",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "palace-pass",
+    "name": "地灵殿通行证",
+    "price": 100,
+    "category": "道具",
+    "icon": "passport",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "cat-ears",
+    "name": "猫耳发饰",
+    "price": 49999,
+    "category": "服饰",
+    "icon": "cat-ears",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "replica-third-eye",
+    "name": "仿制觉之瞳",
+    "price": 5000,
+    "category": "道具",
+    "icon": "third-eye",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "amnesia-potion",
+    "name": "消忆药水",
+    "price": 12999,
+    "category": "道具",
+    "icon": "potion",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "satori-wardrobe",
+    "name": "觉的衣柜",
+    "price": 6480,
+    "category": "服饰",
+    "icon": "wardrobe",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "engagement-ring",
+    "name": "订婚戒指",
+    "price": 5201314,
+    "category": "收藏",
+    "icon": "ring",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "couple-photo",
+    "name": "情侣合照",
+    "price": 520,
+    "category": "收藏",
+    "icon": "photo",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "valentine-2025",
+    "name": "2025情人节纪念章",
+    "price": 520,
+    "category": "纪念",
+    "icon": "medal-valentine",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "satori-day-2025",
+    "name": "2025觉之日纪念章",
+    "price": 514,
+    "category": "纪念",
+    "icon": "medal-satori",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "blank-spell",
+    "name": "空白符卡",
+    "price": 11451,
+    "category": "符卡",
+    "icon": "spell-blank",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "trash-spell",
+    "name": "垃圾符卡",
+    "price": 9,
+    "category": "符卡",
+    "icon": "spell-trash",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "poor-spell",
+    "name": "劣质符卡",
+    "price": 1999,
+    "category": "符卡",
+    "icon": "spell-poor",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "low-spell",
+    "name": "下品符卡",
+    "price": 4599,
+    "category": "符卡",
+    "icon": "spell-low",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "normal-spell",
+    "name": "普通符卡",
+    "price": 14999,
+    "category": "符卡",
+    "icon": "spell-normal",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "high-spell",
+    "name": "上品符卡",
+    "price": 59999,
+    "category": "符卡",
+    "icon": "spell-high",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "finest-spell",
+    "name": "极品符卡",
+    "price": 199999,
+    "category": "符卡",
+    "icon": "spell-finest",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "satori-underwear",
+    "name": "觉的胖次",
+    "price": 55555,
+    "category": "服饰",
+    "icon": "folded-cloth",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "refreshing-pudding",
+    "name": "提神布丁",
+    "price": 999,
+    "category": "道具",
+    "icon": "pudding",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "strawberry-daifuku",
+    "name": "草莓大福",
+    "price": 1280,
+    "category": "道具",
+    "icon": "daifuku",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "hat-gentleman",
+    "name": "帽子先生",
+    "price": 5140,
+    "category": "服饰",
+    "icon": "hat",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "calming-patch",
+    "name": "镇定贴",
+    "price": 100,
+    "category": "道具",
+    "icon": "patch",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "valley-pebble",
+    "name": "谷底小石",
+    "price": 51400,
+    "category": "收藏",
+    "icon": "pebble",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "bites-the-dust",
+    "name": "败者食尘",
+    "price": 100,
+    "category": "道具",
+    "icon": "watch",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "heartbreak-potion",
+    "name": "心碎魔药",
+    "price": 1999,
+    "category": "道具",
+    "icon": "heartbreak-potion",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "snack-box",
+    "name": "点心盒",
+    "price": 1000,
+    "category": "道具",
+    "icon": "snack-box",
+    "description": "",
+    "acquisition": [
+      {
+        "type": "shop",
+        "label": "P点商店（试售）",
+        "detail": "",
+        "enabled": true
+      }
+    ]
+  }
+]

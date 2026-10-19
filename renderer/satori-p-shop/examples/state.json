@@ -1,0 +1,7 @@
+{
+  "mode": "shop",
+  "page": 1,
+  "selectedId": "satori-fumo",
+  "balance": 52000,
+  "inventory": { "satori-fumo": 1, "palace-pass": 1, "cat-ears": 1, "replica-third-eye": 1, "amnesia-potion": 2 }
+}
