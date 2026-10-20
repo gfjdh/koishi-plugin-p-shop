@@ -8,6 +8,7 @@ import Puppeteer, { } from 'koishi-plugin-puppeteer'
 import { renderViewShop, renderViewItem, renderViewBag } from './renderer'
 import * as fs from 'fs'
 import * as path from 'path'
+import { parseUiTheme, THEME_LABELS, UiTheme } from './ui-themes'
 
 const logger = new Logger('p-shop')
 // 商店服务
@@ -15,8 +16,10 @@ export class ShopService {
   private db: DatabaseService
   private items: Record<string, ShopItem>
   private puppeteer: Puppeteer | null
+  private defaultTheme: UiTheme
   constructor(ctx: Context, config: Config) {
     this.db = new DatabaseService(ctx)
+    this.defaultTheme = parseUiTheme(config.defaultTheme) || 'classic'
     this.puppeteer = ctx.puppeteer ? ctx.puppeteer : null
     ensureShopFile(path.resolve(config.dataDir, 'p-shop.json'))
     this.loadItems(config.dataDir)
@@ -27,6 +30,21 @@ export class ShopService {
   }
   public puppeteerReady(): boolean {
     return !!this.puppeteer
+  }
+
+  private themeOf(user: UserData): UiTheme {
+    return parseUiTheme(user.uiTheme) || this.defaultTheme
+  }
+
+  public async setUiTheme(userId: string, input?: string): Promise<string> {
+    const user = await this.db.getUser(userId)
+    const help = '可选：经典、P3、P4、P5。发送“界面主题 P3”即可免费切换，商店和背包一起生效。'
+    if (!input?.trim()) return `当前界面：${THEME_LABELS[user ? this.themeOf(user) : this.defaultTheme]}。\n${help}`
+    const theme = parseUiTheme(input)
+    if (!theme) return `没有这个界面主题。\n${help}`
+    if (!user) return '请先签到再切换界面哦'
+    await this.db.setUiTheme(userId, theme)
+    return `已免费切换为${THEME_LABELS[theme]}，商店和背包一起生效。`
   }
 
   // 加载道具配置
@@ -57,7 +75,7 @@ export class ShopService {
   // 获取商店商品列表
   private getShopItems(user: UserData): ShopItem[] {
     return Object.values(this.items)
-      .filter(item => item.favorability <= user.favorability && (!user.items[item.id] || item.maxStack > user.items[item.id]?.count))
+      .filter(item => item.inShop !== false && item.favorability <= user.favorability && (!user.items?.[item.id] || item.maxStack > user.items[item.id]?.count))
       .map((ShopItem) => (ShopItem))
   }
 
@@ -72,7 +90,18 @@ export class ShopService {
 
   // 全部道具 id，用于背包里判断获取方式
   private getShopIds(): string[] {
-    return Object.keys(this.items)
+    return Object.values(this.items).filter(item => item.inShop !== false).map(item => item.id)
+  }
+
+  // 展示字段直接从原有 p-shop.json 读取；下架后也保留定义供背包使用。
+  private getDisplayMetadata() {
+    const categories: Record<string, string> = {}
+    const acquisitions: Record<string, string> = {}
+    for (const [id, item] of Object.entries(this.items)) {
+      if (typeof item.category === 'string') categories[id] = item.category
+      if (typeof item.acquisition === 'string') acquisitions[id] = item.acquisition
+    }
+    return { categories, acquisitions }
   }
 
   // 查看商店
@@ -87,12 +116,14 @@ export class ShopService {
       if (this.puppeteer) {
         try {
           return await renderViewShop(this.puppeteer, items, {
+            theme: this.themeOf(user),
             balance: user.p,
             selectedId: itemId,
             page,
             inventory: user.items,
             descriptions: this.getDescriptions(),
             shopIds: this.getShopIds(),
+            ...this.getDisplayMetadata(),
           })
         } catch (error) {
           logger.warn('Puppeteer错误；', error)
@@ -102,11 +133,13 @@ export class ShopService {
     } else {
       try {
         return await renderViewShop(this.puppeteer, items, {
+          theme: this.themeOf(user),
           balance: user.p,
           page,
           inventory: user.items,
           descriptions: this.getDescriptions(),
           shopIds: this.getShopIds(),
+          ...this.getDisplayMetadata(),
         })
       } catch (error) {
         logger.warn('Puppeteer错误；', error)
@@ -123,7 +156,6 @@ export class ShopService {
   public async viewBag(userId: string, page?: number): Promise<string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再查看背包哦'
-    if (!user.items || Object.keys(user.items).length === 0) return '你的背包为空'
 
     if (this.puppeteer) {
       try {
@@ -132,15 +164,18 @@ export class ShopService {
           items.push(user.items[key])
         }
         return await renderViewBag(this.puppeteer, items, {
+          theme: this.themeOf(user),
           page,
           inventory: user.items,
           descriptions: this.getDescriptions(),
           shopIds: this.getShopIds(),
+          ...this.getDisplayMetadata(),
         });
       } catch (error) {
         logger.warn('Puppeteer错误；', error)
       }
     }
+    if (!user.items || Object.values(user.items).every(item => !item || item.count <= 0)) return '你的背包为空'
     let message = '当前背包中的道具列表：\n'
     for (const key in user.items) {
       const item = user.items[key]
@@ -157,10 +192,11 @@ export class ShopService {
     const items = this.items
     if (!items) return '商店为空'
     if (!items[itemId]) return '物品不存在'
+    if (items[itemId].inShop === false) return '此物品未在商店上架'
     if (amount < 1) return '购买数量必须大于0'
 
     const targetItem = items[itemId]
-    const userItemCount = user.items[itemId] ? user.items[itemId].count : 0
+    const userItemCount = user.items?.[itemId]?.count || 0
     if (user.p < targetItem.price * amount) return 'P点不足，无法购买此物品'
     if (user.favorability < targetItem.favorability) return '好感度不足，无法购买此物品'
     if (targetItem.maxStack < userItemCount + amount) return '超出此物品持有上限:' + targetItem.maxStack
@@ -243,7 +279,9 @@ export class ShopService {
       try {
         const shopItem = this.items[itemId]
         return await renderViewItem(this.puppeteer, user.items[itemId], shopItem ? shopItem.description : '', {
+          theme: this.themeOf(user),
           shopIds: this.getShopIds(),
+          ...this.getDisplayMetadata(),
         })
       } catch (error) {
         logger.warn('Puppeteer错误；', error)

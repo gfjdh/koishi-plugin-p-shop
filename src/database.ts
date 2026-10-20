@@ -28,6 +28,11 @@ export class DatabaseService {
     })
   }
 
+  // 只更新主题字段，不读写余额、库存、好感度或道具状态。
+  async setUiTheme(userId: string, uiTheme: UserData['uiTheme']): Promise<void> {
+    await this.ctx.database.set('p_system', { userid: userId }, { uiTheme })
+  }
+
   // 初始化数据库
   async initDatabase(ctx: Context) {
     ctx.model.extend('p_system', {
@@ -39,7 +44,8 @@ export class DatabaseService {
       exchangeTime: 'date',
       favorability: 'integer',
       usage: 'integer',
-      items: 'object'
+      items: 'object',
+      uiTheme: { type: 'string', nullable: true },
     }, { autoInc: true })
   }
 }

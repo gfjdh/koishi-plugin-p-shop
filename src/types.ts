@@ -1,5 +1,6 @@
 import { Context, Session } from 'koishi'
 import { Config } from '.'
+import type { UiTheme } from './ui-themes'
 
 //记忆配置
 export interface MemoryEntry {
@@ -16,6 +17,7 @@ export interface UserData {
   favorability: number
   usage: number
   items?: Record<string, UserItem>
+  uiTheme?: UiTheme
 }
 
 // 道具数据模型
@@ -31,6 +33,12 @@ export interface UserItem {
 export interface ShopItem {
   id: string
   description: string
+  /** 展示分类；不填则按内置分类显示。 */
+  category?: string
+  /** 展示获取方式；不填则按内置获取方式显示。 */
+  acquisition?: string
+  /** false 为下架，道具定义和已有库存仍保留。 */
+  inShop?: boolean
   price: number
   maxStack: number
   favorability: number
