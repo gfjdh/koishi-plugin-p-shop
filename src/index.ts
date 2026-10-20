@@ -7,7 +7,7 @@ export const name = 'p-shop'
 
 export const usage = `
 - **指令：界面主题 [经典/P3/P4/P5]**\n
-    免费切换商店与背包主题，不需要道具、不扣 P 点；不填参数查看当前选择。\n
+    切换商店与背包主题，不需要道具、不扣 P 点；不填参数查看当前选择。\n
 - **指令：p-shop [道具名] [页码]**\n
     别名：查看商店\n
     默认显示完整商品总览，“查看商店 消忆药水”查看单件详情。旧页码参数仍可用，会返回完整总览。\n
@@ -35,13 +35,13 @@ export const Config: Schema<Config> = Schema.object({
   defaultTheme: Schema.union([
     Schema.const('classic').description('经典木纹'), Schema.const('p3').description('P3 蓝色'),
     Schema.const('p4').description('P4 黄黑'), Schema.const('p5').description('P5 品红'),
-  ]).default('classic').description('未自行选择主题的用户默认使用的界面；用户可免费切换。'),
+  ]).default('classic').description('未自行选择主题的用户默认使用的界面；'),
 })
 
 
 export function apply(ctx: Context, cfg: Config) {
   const shop = new ShopService(ctx, cfg)
-  ctx.command('p/p-theme [theme:text]', '免费切换商店与背包界面').alias('界面主题')
+  ctx.command('p/p-theme [theme:text]', '切换商店与背包界面').alias('界面主题')
     .action(async ({ session }, theme) => shop.setUiTheme(session.userId, theme))
   ctx.command('p/p-shop [id] [page:number]').alias('查看商店')
     .action(async ({ session }, id = '', page?: number) => {

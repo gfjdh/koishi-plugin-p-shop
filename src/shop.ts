@@ -38,13 +38,13 @@ export class ShopService {
 
   public async setUiTheme(userId: string, input?: string): Promise<string> {
     const user = await this.db.getUser(userId)
-    const help = '可选：经典、P3、P4、P5。发送“界面主题 P3”即可免费切换，商店和背包一起生效。'
+    const help = '可选：经典、P3、P4、P5。发送“界面主题 P3”即可切换，商店和背包一起生效。'
     if (!input?.trim()) return `当前界面：${THEME_LABELS[user ? this.themeOf(user) : this.defaultTheme]}。\n${help}`
     const theme = parseUiTheme(input)
     if (!theme) return `没有这个界面主题。\n${help}`
     if (!user) return '请先签到再切换界面哦'
     await this.db.setUiTheme(userId, theme)
-    return `已免费切换为${THEME_LABELS[theme]}，商店和背包一起生效。`
+    return `已切换为${THEME_LABELS[theme]}，商店和背包一起生效。`
   }
 
   // 加载道具配置
