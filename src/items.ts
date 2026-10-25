@@ -1,7 +1,8 @@
 // ==================== 道具配置 ====================
 import { Logger, h } from 'koishi'
 import { ShopItem } from './types'
-import { loadMemoryFile, writeMemoryFile, decrypt, writePortraitFile } from './utils'
+import { decrypt } from './utils'
+import { isMemoryReady, getMemoryScopeId, eraseMemoriesByKeyword, forgetAllMemories, FORGOTTEN_HINT } from './memory-bridge'
 import fs from 'fs'
 import path from 'path'
 
@@ -49,15 +50,24 @@ export const ITEMS: Record<string, ShopItem> = {
     maxStack: 10,
     description: '使用后删除与一个词相关的记忆',
     favorability: 200,
-    use: async ({ args, user, item }) => {
+    use: async ({ args, user, item, session }, _cfg, ctx) => {
       if (!args[0] || args[0].length !== 2) return '请提供一个两个字的关键词'
-      const memories = await loadMemoryFile(user.userid)
-      const filtered = memories.filter(entry => !entry.content.includes(args[0]))
-
-      if (memories.length === filtered.length) return '没有找到相关记忆'
-      await writeMemoryFile(user.userid, filtered)
+      if (!isMemoryReady(ctx)) return '记忆系统未就绪，暂时无法使用（satori-ai 未启用）'
+      const scopeId = getMemoryScopeId(ctx, session, user.userid)
+      const result = await eraseMemoriesByKeyword(ctx, scopeId, args[0])
+      const total = result.dialogues + result.memories + result.redacted + result.profile + result.shortTerm
+      if (!total) return '没有找到相关记忆'
       item.count--
-      return `已删除包含【${args[0]}】的${memories.length - filtered.length}条记忆`
+      const memoryDetail = result.redacted
+        ? `分层记忆 删除 ${result.memories} 条、改写 ${result.redacted} 条`
+        : `分层记忆 ${result.memories} 条`
+      const detail = [
+        `对话 ${result.dialogues} 条`,
+        memoryDetail,
+        `画像 ${result.profile} 条`,
+        `近期对话 ${result.shortTerm} 条`,
+      ].join('、')
+      return `已删除包含【${args[0]}】的记忆：${detail}`
     }
   },
   '败者食尘': {
@@ -66,9 +76,10 @@ export const ITEMS: Record<string, ShopItem> = {
     maxStack: 1,
     description: '使用后清空所有好感度和记忆',
     favorability: 800,
-    use: async ({ user, item }) => {
-      await writeMemoryFile(user.userid, [])
-      await writePortraitFile(user.userid, '你似乎曾经和他很熟悉，但是你已经忘记了')
+    use: async ({ user, item, session }, _cfg, ctx) => {
+      if (!isMemoryReady(ctx)) return '记忆系统未就绪，暂时无法使用（satori-ai 未启用）'
+      const scopeId = getMemoryScopeId(ctx, session, user.userid)
+      await forgetAllMemories(ctx, scopeId, FORGOTTEN_HINT)
       user.favorability = 0
       item.count--
       return '已清空所有好感度和记忆'

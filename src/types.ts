@@ -2,11 +2,7 @@ import { Context, Session } from 'koishi'
 import { Config } from '.'
 import type { UiTheme } from './ui-themes'
 
-//记忆配置
-export interface MemoryEntry {
-  role: string
-  content: string
-}
+//用户数据模型
 export interface UserData {
   id: number
   userid: string

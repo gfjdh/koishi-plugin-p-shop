@@ -1,5 +1,5 @@
 // ==================== 辅助函数 ====================
-import { MemoryEntry, ShopItem } from './types'
+import { ShopItem } from './types'
 import { ITEMS } from './items'
 import fs from 'fs'
 import path from 'path'
@@ -26,23 +26,7 @@ export async function loadShopFile(filePath: string): Promise<Record<string, Par
 }
 
 // 加载记忆文件
-export async function loadMemoryFile(userId: string): Promise<MemoryEntry[]> {
-  const memoriesPath = path.join('./data/satori_ai/dialogues', `${userId}.txt`)
-  fs.mkdirSync(path.dirname(memoriesPath), { recursive: true })
-  if (!fs.existsSync(memoriesPath)) { fs.writeFileSync(memoriesPath, '[]', 'utf-8') }
-  return JSON.parse(fs.readFileSync(memoriesPath, 'utf-8'))
-}
-// 写入记忆文件
-export async function writeMemoryFile(userId: string, content: MemoryEntry[]): Promise<void> {
-  const memoriesPath = path.join('./data/satori_ai/dialogues', `${userId}.txt`)
-  fs.writeFileSync(memoriesPath, JSON.stringify(content, null, 2), 'utf-8')
-}
-
-// 写入画像文件
-export async function writePortraitFile(userId: string, content: string): Promise<void> {
-  const portraitPath = path.join('./data/satori_ai/UserPortrait', `${userId}.txt`)
-  fs.writeFileSync(portraitPath, content, 'utf-8')
-}
+// 记忆已迁到 satori-ai 的 sat_* 表，旧的 dialogues/UserPortrait 读写不再使用。
 
 // ==================== 加密/解密 ====================
 // ================== Base64 实现 ==================
