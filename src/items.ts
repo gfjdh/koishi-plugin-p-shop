@@ -203,7 +203,7 @@ export const ITEMS: Record<string, ShopItem> = {
     id: '地灵殿通行证',
     price: 100,
     maxStack: 1,
-    description: '使用自备apikey并且获得无限对话次数，参数 [加密后的key] [副模型触发长度(可选)]，具体使用方式请加入空间内QQ群并查看精华消息。',
+    description: '使用自备apikey并且获得无限对话次数，参数 [key或加密后的key] [副模型触发长度(可选)]，明文key需以ark-或sk-开头，具体使用方式请加入空间内QQ群并查看精华消息。',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
       if (args.length === 1 && args[0] === 'ds') {
@@ -226,7 +226,10 @@ export const ITEMS: Record<string, ShopItem> = {
       }
       if (args.length === 1) {
         const encryptedKey = args[0]
-        const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
+        // 明文 key（ark-/sk- 开头）直接使用，无需解密
+        const decryptedKey = /^(ark-|sk-)/.test(encryptedKey)
+          ? encryptedKey
+          : decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
         item.metadata.key = decryptedKey
         item.description = 'on'
         user.usage = user.usage > 9999 ? user.usage : 9999
@@ -234,7 +237,7 @@ export const ITEMS: Record<string, ShopItem> = {
       }
       else if (args.length === 2 && item.metadata && item.description) {
         const use_not_reasoner_LLM_length = Number(args[1])
-        if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[加密后的key] [触发长度]'
+        if (isNaN(use_not_reasoner_LLM_length)) return '请提供正确的参数：[key或加密后的key] [触发长度]'
         if (use_not_reasoner_LLM_length < 0) return '触发长度不能小于0'
         item.metadata.use_not_reasoner_LLM_length = use_not_reasoner_LLM_length
         item.description = 'on'
@@ -249,7 +252,7 @@ export const ITEMS: Record<string, ShopItem> = {
         user.usage = 9999
         return on ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
       }
-      return '设置基础参数或副模型： [加密后的key] [副模型触发长度(可选)]，配置基础参数后直接使用即可开关地灵殿通行证，详细教程请加空间内QQ群查看精华消息'
+      return '设置基础参数或副模型： [key或加密后的key] [副模型触发长度(可选)]，明文key需以ark-或sk-开头，配置基础参数后直接使用即可开关地灵殿通行证，详细教程请加空间内QQ群查看精华消息'
     },
     sell: async (user) => {
       const item = user.items['地灵殿通行证']
